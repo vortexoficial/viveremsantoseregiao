@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viver em Santos & Região</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="img/favicon.png" type="image/png">
+
+  <style>
+    /* ===================== BASE / CORES ===================== */
+    :root{
+      --logo-size: 190px;
+      --bar-extra: 40px;
+      --bar-height: 6px;
+      --bar-color: #043c7c;
+      --accent: #d6a15b;
+      --accent-soft-2: #e7d2aa;
+      --banners-maxw: 640px;
+    }
+
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    body{ background:#ffffff; font-family:"Montserrat",sans-serif; }
+
+    /* ===================== LOADER ===================== */
+    .loader-wrap{
+      position:fixed; inset:0; z-index:9999;
+      display:grid; place-items:center;
+      background:#ffffff;
+    }
+    .loader-inner{ text-align:center; width:fit-content; }
+    .loader-logo img{
+      width:var(--logo-size); height:var(--logo-size);
+      object-fit:contain; animation:fadeIn .8s ease-out forwards;
+    }
+    .loader-bar{
+      position:relative;
+      width:calc(var(--logo-size) + var(--bar-extra));
+      height:var(--bar-height);
+      margin:18px auto 0;
+      border-radius:999px;
+      background:rgba(0,37,105,0.15);
+      overflow:hidden;
+    }
+    .loader-fill{
+      position:absolute; inset:0;
+      background:var(--bar-color);
+      transform-origin:left; transform:scaleX(0);
+      animation:fillLtoR 2.5s ease-in-out forwards;
+    }
+    .loader-text{ margin-top:10px; color:rgba(78,78,78,.85); animation:fadeIn .8s ease-out forwards; }
+    body.loading > *:not(#loader){ display:none; }
+    @keyframes fillLtoR{ to{ transform:scaleX(1); } }
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+    .loader-wrap.fade-out{ opacity:0; transition:opacity .4s ease; pointer-events:none; }
+
+    /* ===================== HERO / LOGO ===================== */
+    .hero{ padding:18px 16px 0; text-align:center; }
+    .logo-container .logo{ width:150px; height:auto; }
+    .social-icons{ display:flex; gap:14px; justify-content:center; align-items:center; margin:10px 0 6px; }
+    .social-icons img{ width:26px; height:26px; display:block; }
+    .arrow{ margin-top:6px; }
+
+    /* ===================== LISTA DE BANNERS FIXOS ===================== */
+    .banners{ padding: 0 12px 16px; }
+    .banners a img{
+      display:block;
+      width:100%;
+      height:auto;
+      margin-bottom:10px;
+      border-radius:18px;
+    }
+
+    @media (min-width: 769px){
+      .banners{
+        max-width: var(--banners-maxw);
+        margin: 0 auto 24px;
+        padding: 0;
+      }
+      .banners a img{
+        margin-bottom: 14px;
+        border-radius: 18px;
+      }
+    }
+
+    /* ===================== CARROSSEL DO TOPO ===================== */
+    .top-carousel{ padding:0; } /* colado no topo */
+    .tc-viewport{
+      position:relative;
+      max-width:980px;
+      margin:0 auto 18px;
+      overflow:hidden;
+      border-radius: 0 0 22px 22px; /* apenas parte de baixo arredondada */
+      box-shadow:0 8px 24px rgba(0,0,0,.12);
+    }
+    .tc-track{ display:flex; will-change:transform; transform:translateX(0); }
+    .tc-slide{ flex:0 0 100%; user-select:none; }
+    .tc-slide img{
+      display:block; width:100%;
+      height:48vw;
+      max-height:460px;
+      min-height:200px;
+      object-fit:cover;
+      border-radius:0 0 22px 22px; /* apenas a parte inferior */
+    }
+    .tc-nav{
+      position:absolute; top:50%; transform:translateY(-50%);
+      width:38px; height:38px; border-radius:999px;
+      border:none; background:rgba(0,0,0,.55); color:#fff;
+      font-size:22px; line-height:38px; cursor:pointer;
+      display:grid; place-items:center; backdrop-filter:blur(2px);
+    }
+    .tc-prev{ left:10px; } .tc-next{ right:10px; }
+    .tc-nav:hover{ background:rgba(0,0,0,.7); }
+    .tc-dots{
+      position:absolute; left:50%; bottom:10px; transform:translateX(-50%);
+      display:flex; gap:5px; padding:4px 6px;
+      background:rgba(0,0,0,.25); border-radius:999px; backdrop-filter:blur(4px);
+    }
+    .tc-dot{
+      width:6px; height:6px;
+      border-radius:50%; border:0;
+      background:rgba(255,255,255,.55); cursor:pointer;
+    }
+    .tc-dot.active{ background:#fff; }
+    @media (hover:none){ .tc-nav{ display:none; } }
+
+    /* ===================== RODAPÉ ===================== */
+    footer{ text-align:center; padding:6px 12px 14px; color:#333; }
+    .credit-bar{
+      width:100%; text-align:center; background:#000;
+      padding:10px 0 14px; font-size:0.9rem; color:#ffe5c7; letter-spacing:0.3px;
+      border-top:1px solid rgba(255,255,255,0.05);
+    }
+    .credit-bar a{ color:var(--accent); font-weight:700; text-decoration:none; margin-left:4px; transition:color .2s ease, opacity .2s ease; }
+    .credit-bar a:hover{ color:var(--accent-soft-2); opacity:0.85; }
+    /* Margem lateral só no MOBILE para os banners rotatórios do topo */
+@media (max-width: 768px){
+  .top-carousel{
+    padding: 0 12px;   /* margem de 12px à esquerda e direita */
+  }
+  /* mantém o topo reto (sem cantos arredondados na parte de cima) */
+  .tc-viewport{
+    border-radius: 0 0 22px 22px;
+  }
+  .tc-slide img{
+    border-radius: 0 0 22px 22px;
+  }
+}
+ 
+.frase {
+  border: 1.5px solid #ffffff; /* cinza claro */
+  border-radius: 10px;         /* cantos levemente arredondados */
+  padding: 12px 18px;          /* espaço interno */
+  display: inline-block;       /* ajusta o tamanho ao texto */
+  margin: 20px auto;           /* centraliza */
+  text-align: center;
+  background-color: #fff;      /* fundo branco (opcional) */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* sombra leve opcional */
+}
+  </style>
+</head>
+
+<body class="loading">
+  <!-- ========== LOADER ========== -->
+  <div id="loader" class="loader-wrap">
+    <div class="loader-inner">
+      <div class="loader-logo">
+        <img src="img/logo.png" alt="Logo Viver em Santos" />
+      </div>
+      <div class="loader-bar"><span class="loader-fill"></span></div>
+      <p class="loader-text">Carregando...</p>
+    </div>
+  </div>
+
+  <!-- ========== CARROSSEL NO TOPO ========== -->
+  <section class="top-carousel">
+    <div class="tc-viewport">
+      <div class="tc-track">
+        <!-- clone do último -->
+        <a class="tc-slide" href=""><img src="img/banner33.png" alt="Banner 3" /></a>
+
+        <!-- BANNERS ROTATIVOS NOMEADOS -->
+        <a class="tc-slide" href="" target="_blank">
+          <img id="bannertopo1" src="img/bannertopo1.jpg" alt="Banner Topo 1" />
+        </a>
+        <a class="tc-slide" href="">
+          <img id="bannertopo2" src="img/bannertopo2.jpg" alt="Banner Topo 2" />
+        </a>
+        <a class="tc-slide" href="">
+          <img id="bannertopo3" src="img/bannertopo3.jpg" alt="Banner Topo 3" />
+        </a>
+
+        <!-- clone do primeiro -->
+        <a class="tc-slide" href="" target="_blank">
+          <img src="img/bannertopo1.jpg" alt="Banner 1" />
+        </a>
+      </div>
+
+      <button class="tc-nav tc-prev" aria-label="Anterior">‹</button>
+      <button class="tc-nav tc-next" aria-label="Próximo">›</button>
+
+      <div class="tc-dots">
+        <button class="tc-dot active"></button>
+        <button class="tc-dot"></button>
+        <button class="tc-dot"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== HERO / LOGO / REDES ========== -->
+  <div class="hero">
+    <div class="logo-container">
+      <img src="img/logo.png" alt="Logo" class="logo" />
+      <br><div class="frase">
+  <h4>
+    <font color="#043c7c">
+      Conectamos você às principais<br>
+      novidades de Santos, do Brasil<br>
+      e do mundo
+    </font>
+  </h4>
+</div>
+      
+    </div>
+    <div class="arrow"><font size="3" color="black">Clique e acesse ↓</font></div>
+  </div>
+<br>
+  <!-- ========== BANNERS FIXOS ========== -->
+  <div class="banners">
+    <a href="1" target="_blank"><img src="img/banner1.png" alt="Banner 1" /></a>
+    <a href=""><img src="img/banner22.png" alt="Banner 2" /></a>
+    <a href=""><img src="img/banner33.png" alt="Banner 3" /></a>
+    <a href=""><img src="img/banner44.png" alt="Banner 4" /></a>
+  </div><br>
+<div class="social-icons">
+        <a href=""><img src="img/instagram.png" alt="Instagram" /></a>
+        <a href=""><img src="img/whatsapp.png" alt="WhatsApp" /></a>
+      </div><br>
+  <!-- ========== RODAPÉ ========== -->
+  <footer>
+    © <span id="year"></span> Viver em Santos & Região. Todos os direitos reservados.
+  </footer>
+
+  <div class="credit-bar">
+    Desenvolvido por <a href="https://wa.me/557581973628" target="_blank" rel="noopener">FUTURA DESIGN</a>
+  </div>
+
+  <!-- ========== SCRIPT ========== -->
+  <script>
+    const LOADER_TIMEOUT = 2500;
+    window.addEventListener('load', () => {
+      const loader = document.getElementById('loader');
+      setTimeout(() => {
+        loader.classList.add('fade-out');
+        setTimeout(() => {
+          loader.remove();
+          document.body.classList.remove('loading');
+        }, 450);
+      }, LOADER_TIMEOUT);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const y = document.getElementById('year');
+      if (y) y.textContent = new Date().getFullYear();
+    });
+
+    /* ===== Carrossel Topo ===== */
+    (function(){
+      const track  = document.querySelector('.tc-track');
+      const viewport = document.querySelector('.tc-viewport');
+      if(!track || !viewport) return;
+
+      const realCount = 3;
+      let idx = 1;
+      const DURATION = 450;
+      const INTERVAL = 3000;
+
+      const setX = () => { track.style.transform = `translateX(-${idx * 100}%)`; };
+      const goTo = (i) => { track.style.transition = `transform ${DURATION}ms ease`; idx = i; setX(); };
+      const noAnim = (i) => { track.style.transition = 'none'; idx = i; setX(); };
+
+      setX();
+
+      track.addEventListener('transitionend', () => {
+        if(idx === realCount + 1) noAnim(1);
+        if(idx === 0) noAnim(realCount);
+        updateDots();
+      });
+
+      let timer = setInterval(() => goTo(idx + 1), INTERVAL);
+      const restart = () => { clearInterval(timer); timer = setInterval(() => goTo(idx + 1), INTERVAL); };
+
+      const prev = document.querySelector('.tc-prev');
+      const next = document.querySelector('.tc-next');
+      prev && prev.addEventListener('click', () => { goTo(idx - 1); restart(); });
+      next && next.addEventListener('click', () => { goTo(idx + 1); restart(); });
+
+      const dots = Array.from(document.querySelectorAll('.tc-dot'));
+      function updateDots(){
+        let realIndex = idx;
+        if(idx === 0) realIndex = realCount;
+        if(idx === realCount + 1) realIndex = 1;
+        dots.forEach((d,i)=> d.classList.toggle('active', i+1 === realIndex));
+      }
+      dots.forEach((d,i)=> d.addEventListener('click', ()=>{ goTo(i+1); restart(); }));
+      updateDots();
+    })();
+  </script>
+</body>
+</html>
