@@ -158,6 +158,94 @@
   background-color: #fff;      /* fundo branco (opcional) */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* sombra leve opcional */
 }
+/* ===== EFEITO HOVER (mais brilho, sem sombra) ===== */
+.banners a img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 18px;
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* Ao passar o mouse: zoom leve + brilho intenso */
+.banners a:hover img {
+  transform: scale(1.04);           /* leve zoom */
+  filter: brightness(1.18) saturate(1.1); /* brilho e cor mais vivos */
+}
+
+/* ===== SCROLLBAR GLOBAL (roxo escuro, fino e elegante) ===== */
+
+/* Chrome, Edge, Safari (webkit) */
+::-webkit-scrollbar {
+  width: 6px;               /* espessura fina */
+  height: 6px;              /* também para rolagem horizontal */
+}
+
+::-webkit-scrollbar-track {
+  background: #f4f4f4;       /* fundo neutro */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3f007a;       /* roxo bem escuro */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3c096c;       /* roxo mais vivo ao interagir */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;                   /* deixa fino */
+  scrollbar-color: #450680 #f4f4f4;        /* polegar roxo / trilho claro */
+}
+
+/* Força compatibilidade mobile (Android Chrome / iOS Safari) */
+html {
+  -webkit-overflow-scrolling: touch;       /* rolagem suave */
+  scrollbar-color: #560386 #f4f4f4;        /* mantém cor no mobile */
+}
+
+/* ===== Animação de clique nos banners ===== */
+@keyframes bannerClickFlash {
+  0%   { filter: brightness(1);   transform: scale(1);   }
+  40%  { filter: brightness(1.8); transform: scale(1.06);}
+  100% { filter: brightness(1);   transform: scale(1.04);}
+}
+
+.banners a img.click-anim {
+  animation: bannerClickFlash 0.6s ease forwards;
+}
+/* ===== Animação ao clicar, sem redirecionar ===== */
+@keyframes bannerClickFlash {
+  0%   { filter: brightness(1);   transform: scale(1); }
+  40%  { filter: brightness(1.8); transform: scale(1.06); }
+  100% { filter: brightness(1);   transform: scale(1.04); }
+}
+
+/* Transição suave ao passar o mouse */
+.banners a img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* Efeito hover */
+.banners a:hover img {
+  transform: scale(1.04);
+  filter: brightness(1.18) saturate(1.1);
+}
+
+/* Efeito de clique (animação rápida) */
+.banners a img.click-anim {
+  animation: bannerClickFlash 0.6s ease forwards;
+}
+
   </style>
 </head>
 
@@ -228,7 +316,7 @@
 <br>
   <!-- ========== BANNERS FIXOS ========== -->
   <div class="banners">
-    <a href="1" target="_blank"><img src="img/banner1.png" alt="Banner 1" /></a>
+    <a href=""><img src="img/banner1.png" alt="Banner 1" /></a>
     <a href=""><img src="img/banner22.png" alt="Banner 2" /></a>
     <a href=""><img src="img/banner33.png" alt="Banner 3" /></a>
     <a href=""><img src="img/banner44.png" alt="Banner 4" /></a>
@@ -307,5 +395,45 @@
       updateDots();
     })();
   </script>
+  <script>
+document.querySelectorAll('.banners a').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault(); // impede o redirecionamento imediato
+
+    // adiciona classe para iniciar animação
+    const img = link.querySelector('img');
+    img.classList.add('click-anim');
+
+    // espera a duração da animação (600ms) e só então abre o link
+    setTimeout(() => {
+      window.open(link.href, link.target || '_self');
+      img.classList.remove('click-anim');
+    }, 600);
+  });
+});
+</script>
+<script>
+/* Impede redirecionamento e executa animação de clique */
+document.querySelectorAll('.banners a').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault(); // não abre o link
+
+    const img = link.querySelector('img');
+    if (!img) return;
+
+    // evita acumular múltiplas animações
+    img.classList.remove('click-anim');
+    void img.offsetWidth; // força reflow
+
+    // adiciona a classe para rodar a animação
+    img.classList.add('click-anim');
+
+    // remove a classe após o tempo da animação (0.6s)
+    setTimeout(() => img.classList.remove('click-anim'), 600);
+  });
+});
+</script>
+
+
 </body>
 </html>
